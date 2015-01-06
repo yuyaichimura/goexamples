@@ -6,10 +6,15 @@ import (
     "fmt"
 )
 
+/* A global reference to ui.Window */
 var window ui.Window
 
+/* Initializes the gui window */
 func initGUI() {
 
+    /* Initializes components
+     * Textfields, buttons, labels
+     */
     tf_celsius := ui.NewTextField()
     tf_fahrenheit := ui.NewTextField()
     b_c2f := ui.NewButton(">>")
@@ -17,13 +22,16 @@ func initGUI() {
     l_c := ui.NewLabel("C")
     l_f := ui.NewLabel("F")
 
+    /* Creates Stacks to align the components the way 
+     * I want them to align. Could have used grid
+     * layouts or some other layouts but I decided
+     * to use vertical and horizontal stacks 
+     */
     stack_c := ui.NewHorizontalStack(tf_celsius, l_c)
     stack_c2 := ui.NewVerticalStack(stack_c, b_c2f)
 
     stack_f := ui.NewHorizontalStack(tf_fahrenheit, l_f)
     stack_f2 := ui.NewVerticalStack(stack_f, b_f2c)
-
-
 
     stack := ui.NewSimpleGrid(2,
         stack_c2,
@@ -31,12 +39,16 @@ func initGUI() {
 
     stack.SetPadded(true)
 
+    /* Sets the title and size of the window */
     window = ui.NewWindow("Temperature Calculator", 370, 70, stack)
     window.SetMargined(true)
     window.OnClosing(func() bool {
         ui.Stop()
         return true
     })
+
+    /* Sets the OnClicked functions for the buttons
+     * using anonymous functions */
     b_c2f.OnClicked(func(){
 
         var res string
@@ -53,7 +65,6 @@ func initGUI() {
                 res = fmt.Sprintf("%.2f", val_f)
             }
         }
-
 
         tf_fahrenheit.SetText(res)
     })
@@ -78,9 +89,13 @@ func initGUI() {
         tf_celsius.SetText(res)
     })
 
+    /* Finally shows the window*/
     window.Show()
 }
 
+/* Main function 
+ * Calls a function to initialize the gui on another thread
+ */
 func main() {
     go ui.Do(initGUI)
     err := ui.Go()
